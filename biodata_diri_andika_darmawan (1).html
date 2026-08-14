@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biodata Diri | Portofolio Saya</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        darkbg: '#050505', // Hitam pekat
+                        cardbg: '#111115', // Abu-abu sangat gelap untuk kotak
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #d1d5db; /* Teks abu-abu terang */
+            overflow-x: hidden;
+        }
+        
+        /* Animasi Pergerakan Gradient RGB */
+        @keyframes rgb-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Teks dengan warna RGB bergerak */
+        .rgb-text {
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rgb-shift 5s linear infinite;
+        }
+
+        /* Background/Garis dengan warna RGB bergerak */
+        .rgb-bg {
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 300% 300%;
+            animation: rgb-shift 5s linear infinite;
+        }
+
+        /* Efek lampu menyala (Glow) pada foto profil */
+        .rgb-glow-profile {
+            position: relative;
+            border-radius: 50%;
+            background: #111115;
+            z-index: 1;
+        }
+        .rgb-glow-profile::before {
+            content: '';
+            position: absolute;
+            top: -4px; left: -4px; right: -4px; bottom: -4px;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 300% 300%;
+            border-radius: 50%;
+            z-index: -1;
+            animation: rgb-shift 5s linear infinite;
+        }
+        .rgb-glow-profile::after {
+            content: '';
+            position: absolute;
+            top: -8px; left: -8px; right: -8px; bottom: -8px;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 300% 300%;
+            border-radius: 50%;
+            z-index: -2;
+            filter: blur(20px);
+            opacity: 0.7;
+            animation: rgb-shift 5s linear infinite;
+        }
+
+        /* Efek hover pada kotak/card (Glow pinggiran RGB) */
+        .rgb-hover-card {
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        .rgb-hover-card:hover {
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); /* Biru cyan nyala */
+            transform: translateY(-5px);
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styling untuk Intro Layar Booting */
+        #intro-screen {
+            position: fixed;
+            inset: 0;
+            background-color: #050505;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .intro-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Matrix rain background canvas */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -5;
+            opacity: 0.15;
+        }
+
+        /* Scrollbar Styling */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #111115;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-purple-500 selection:text-white relative">
+
+    <!-- CANVAS MATRIX BACKGROUND ANIMATION -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- INTRO AWAL KEREN (BOOTING SCREEN) -->
+    <div id="intro-screen">
+        <div class="text-center px-4 max-w-md">
+            <div class="inline-block p-4 rounded-full mb-6 border border-gray-800 bg-cardbg shadow-[0_0_30px_rgba(0,255,255,0.2)]">
+                <i class="fas fa-terminal text-4xl rgb-text"></i>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">INITIALIZING SYSTEM</h1>
+            <p id="loading-text" class="text-gray-400 font-mono text-sm mb-6">&gt; Loading profile: Andika Darmawan...</p>
+            
+            <!-- Progress Bar Intro -->
+            <div class="w-full bg-gray-900 rounded-full h-2 border border-gray-800 overflow-hidden mb-6">
+                <div id="intro-progress" class="rgb-bg h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            
+            <button id="skip-btn" onclick="finishIntro()" class="text-xs text-gray-500 hover:text-white font-mono tracking-widest uppercase transition-colors">
+                [ SKIP INTRO &gt;&gt; ]
+            </button>
+        </div>
+    </div>
+
+    <!-- CUSTOM ALERT MODAL -->
+    <div id="customAlertOverlay" class="fixed inset-0 bg-black/80 z-[9998] hidden backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+    <div id="customAlert" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-cardbg border border-cyan-500 p-8 rounded-2xl shadow-[0_0_30px_rgba(0,255,255,0.2)] z-[9999] hidden flex-col items-center text-center max-w-md w-[90%] transition-all duration-300 scale-95 opacity-0">
+        <div class="w-16 h-16 rounded-full bg-cyan-500/20 flex items-center justify-center mb-4 border border-cyan-500/50">
+            <i class="fas fa-satellite-dish text-3xl text-cyan-400"></i>
+        </div>
+        <h3 class="text-white font-bold text-xl mb-2 tracking-wide">System Diagnostic</h3>
+        <p id="customAlertMsg" class="text-gray-400 text-sm mb-8 font-mono leading-relaxed"></p>
+        <button onclick="closeAlert()" class="px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg transition-all shadow-lg shadow-cyan-500/30 w-full uppercase tracking-wider text-sm">
+            Acknowledge
+        </button>
+    </div>
+
+    <!-- Efek Ambient Lampu di Background -->
+    <div class="fixed top-20 left-10 w-72 h-72 bg-purple-600/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+    <div class="fixed bottom-20 right-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+
+    <nav class="fixed w-full bg-darkbg/90 backdrop-blur-md z-50 transition-all duration-300">
+        <div class="rgb-bg h-1 w-full"></div> <!-- Garis atas RGB -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-800">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="text-2xl font-bold tracking-tighter text-white">Bio<span class="rgb-text">Diri.</span></a>
+                </div>
+                <!-- Menu Desktop -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#beranda" class="text-gray-400 hover:text-white transition-colors font-medium">Beranda</a>
+                    <a href="#tentang" class="text-gray-400 hover:text-white transition-colors font-medium">Tentang</a>
+                    <a href="#pendidikan" class="text-gray-400 hover:text-white transition-colors font-medium">Pendidikan</a>
+                    <a href="#prestasi" class="text-gray-400 hover:text-white transition-colors font-medium">Prestasi</a>
+                    <a href="#keterampilan" class="text-gray-400 hover:text-white transition-colors font-medium">Keterampilan</a>
+                    <a href="#kontak" class="text-gray-400 hover:text-white transition-colors font-medium">Kontak</a>
+                    <!-- Badge Status Online -->
+                    <div class="flex items-center gap-2 px-3 py-1 bg-gray-900 border border-gray-800 rounded-full text-xs font-mono text-green-400">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+                        <span>ONLINE</span>
+                    </div>
+                </div>
+                <!-- Tombol Menu Mobile -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-400 hover:text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Menu Mobile Dropdown -->
+        <div id="mobile-menu" class="md:hidden hidden bg-cardbg border-b border-gray-800 absolute w-full shadow-2xl">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#beranda" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Beranda</a>
+                <a href="#tentang" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Tentang</a>
+                <a href="#pendidikan" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Pendidikan</a>
+                <a href="#prestasi" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Prestasi</a>
+                <a href="#keterampilan" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Keterampilan</a>
+                <a href="#kontak" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Kontak</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="beranda" class="pt-28 pb-20 md:pt-40 md:pb-32 flex items-center min-h-screen">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <!-- Teks Hero -->
+                <div class="flex-1 text-center md:text-left fade-in">
+                    <span class="inline-block py-1 px-3 rounded-full bg-gray-800 text-gray-300 text-sm font-semibold mb-4 border border-gray-700">
+                        <i class="fas fa-bolt text-yellow-400 mr-2"></i> Sistem Online
+                    </span>
+                    <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4 text-white">
+                        Halo, Saya <br/> <span class="rgb-text">Andika Darmawan</span>
+                    </h1>
+                    <h2 class="text-xl md:text-2xl text-gray-400 font-medium mb-6">
+                        Status: <span class="text-white font-semibold">&gt; Pelajar_</span>
+                    </h2>
+                    <p class="text-gray-400 mb-8 max-w-lg mx-auto md:mx-0 text-lg">
+                        Selamat datang di database portofolio saya. Mengeksplorasi dunia perangkat keras komputer, jaringan, dan internet protokol.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                        <a href="#kontak" class="px-8 py-3 rgb-bg text-white font-bold rounded-lg hover:opacity-90 transition-all shadow-lg text-center">
+                            Connect()
+                        </a>
+                        <a href="#tentang" class="px-8 py-3 bg-transparent text-gray-300 border border-gray-600 font-medium rounded-lg hover:border-gray-400 hover:text-white transition-all text-center">
+                            Lihat Profil
+                        </a>
+                    </div>
+                </div>
+                <!-- Gambar Hero dengan efek lampu -->
+                <div class="flex-1 flex justify-center fade-in" style="animation-delay: 0.2s;">
+                    <div class="rgb-glow-profile w-64 h-64 md:w-80 md:h-80">
+                        <div class="w-full h-full rounded-full overflow-hidden bg-cardbg border-4 border-darkbg flex items-center justify-center">
+                            <!-- Logo Inisial -->
+                            <span class="text-7xl font-bold rgb-text">AD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tentang" class="py-20 bg-darkbg border-t border-gray-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Tentang Saya</h2>
+                <div class="h-1 w-20 rgb-bg mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-12 items-start">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-semibold mb-4 text-white"><span class="rgb-text">#</span> Kenalan Singkat</h3>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        Halo! Saya Andika Darmawan, seorang pelajar yang berdomisili di Jakarta Pusat. Saya sangat antusias dalam mempelajari teknologi, khususnya di bidang jaringan dan perangkat keras komputer.
+                    </p>
+                    <p class="text-gray-400 leading-relaxed">
+                        Selain sibuk di depan layar komputer, saya juga aktif di dunia bela diri. Disiplin dan fokus yang saya pelajari dari Pencak Silat selalu saya terapkan dalam menyelesaikan tantangan akademis maupun teknis.
+                    </p>
+                </div>
+                
+                <div class="flex-1 w-full">
+                    <div class="bg-cardbg rounded-xl p-6 border border-gray-800 shadow-2xl relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -z-10 group-hover:bg-purple-500/20 transition-colors"></div>
+                        <h3 class="text-xl font-bold mb-6 text-white border-b border-gray-800 pb-2">Data Pribadi</h3>
+                        <ul class="space-y-5">
+                            <li class="flex items-start">
+                                <span class="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center text-blue-400 mr-4 border border-gray-700"><i class="fas fa-calendar-alt"></i></span>
+                                <div>
+                                    <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Tempat, Tanggal Lahir</span>
+                                    <span class="text-gray-200 font-medium">Jakarta, 15 April 2010</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center text-green-400 mr-4 border border-gray-700"><i class="fas fa-map-marker-alt"></i></span>
+                                <div>
+                                    <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Alamat Domisili</span>
+                                    <span class="text-gray-200 font-medium">Jakarta Pusat, Provinsi Jakarta, Indonesia</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center text-purple-400 mr-4 border border-gray-700"><i class="fas fa-envelope"></i></span>
+                                <div>
+                                    <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Email</span>
+                                    <span class="text-gray-200 font-medium">tuanmudadika8@gmail.com</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pendidikan" class="py-20 bg-[#0a0a0c] border-t border-gray-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Riwayat Pendidikan</h2>
+                <div class="h-1 w-20 rgb-bg mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Timeline Pendidikan -->
+            <div class="relative border-l-2 border-gray-700 ml-4 md:ml-0 md:mx-auto md:w-3/4 lg:w-1/2 space-y-10">
+                
+                <!-- SMK -->
+                <div class="relative pl-8 md:pl-0">
+                    <!-- Lampu Indikator Timeline -->
+                    <div class="md:hidden absolute w-4 h-4 rgb-bg rounded-full -left-[9px] top-2 shadow-[0_0_10px_#fff]"></div>
+                    <div class="hidden md:block absolute w-4 h-4 rgb-bg rounded-full -left-[9px] top-2 shadow-[0_0_10px_#fff]"></div>
+                    
+                    <div class="bg-cardbg p-6 rounded-xl rgb-hover-card md:ml-8 relative overflow-hidden">
+                        <span class="inline-block px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 text-xs rounded-full font-bold mb-3 tracking-wider uppercase">Sekarang</span>
+                        <h3 class="text-xl font-bold text-white">SMK Tamansiswa Madya Teknik 2</h3>
+                        <h4 class="text-cyan-400 font-semibold mt-1 mb-2">Jurusan: Teknik Komputer dan Jaringan (TKJ)</h4>
+                        <h4 class="text-gray-400 font-medium mb-2"><i class="fas fa-map-pin text-xs mr-1"></i> Jakarta</h4>
+                        <p class="text-gray-500 text-sm leading-relaxed">
+                            Sedang menempuh pendidikan kejuruan dengan fokus pada bidang teknologi, jaringan komputer, dan infrastruktur IT.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- SMP -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:hidden absolute w-4 h-4 bg-gray-600 rounded-full -left-[9px] top-2 border-2 border-gray-900"></div>
+                    <div class="hidden md:block absolute w-4 h-4 bg-gray-600 rounded-full -left-[9px] top-2 border-2 border-gray-900"></div>
+                    
+                    <div class="bg-cardbg p-6 rounded-xl rgb-hover-card md:ml-8">
+                        <span class="inline-block px-3 py-1 bg-gray-800 text-gray-400 border border-gray-700 text-xs rounded-full font-bold mb-3 tracking-wider uppercase">Lulus</span>
+                        <h3 class="text-xl font-bold text-white">SMP Tamansiswa</h3>
+                        <h4 class="text-gray-400 font-medium mb-2">Taman Dewasa Cabang 25, Jakarta</h4>
+                    </div>
+                </div>
+
+                <!-- SD -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:hidden absolute w-4 h-4 bg-gray-600 rounded-full -left-[9px] top-2 border-2 border-gray-900"></div>
+                    <div class="hidden md:block absolute w-4 h-4 bg-gray-600 rounded-full -left-[9px] top-2 border-2 border-gray-900"></div>
+                    
+                    <div class="bg-cardbg p-6 rounded-xl rgb-hover-card md:ml-8">
+                        <span class="inline-block px-3 py-1 bg-gray-800 text-gray-400 border border-gray-700 text-xs rounded-full font-bold mb-3 tracking-wider uppercase">Lulus</span>
+                        <h3 class="text-xl font-bold text-white">SDN 13 Pagi Kemayoran</h3>
+                        <h4 class="text-gray-400 font-medium mb-2">Jakarta</h4>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="prestasi" class="py-20 bg-darkbg border-t border-gray-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Prestasi & Pengalaman</h2>
+                <div class="h-1 w-20 rgb-bg mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Prestasi 1 -->
+                <div class="bg-cardbg p-6 rounded-xl rgb-hover-card flex items-start gap-5 relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl group-hover:bg-yellow-500/20 transition-all"></div>
+                    
+                    <div class="w-14 h-14 bg-yellow-500/20 text-yellow-400 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 border border-yellow-500/30">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-lg font-bold text-white mb-1">Juara 3 Pencak Silat</h3>
+                        <p class="text-yellow-400 font-medium text-sm mb-3">Casau Championship (Remaja Kelas G)</p>
+                        <p class="text-gray-400 text-sm">
+                            Memenangkan juara 3 dalam turnamen pencak silat. Membentuk karakter yang tangguh, disiplin, dan memiliki mental sportivitas tinggi.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pengalaman 1 -->
+                <div class="bg-cardbg p-6 rounded-xl rgb-hover-card flex items-start gap-5 relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+                    
+                    <div class="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 border border-blue-500/30">
+                        <i class="fas fa-briefcase-medical"></i>
+                    </div>
+                    <div class="z-10">
+                        <h3 class="text-lg font-bold text-white mb-1">Dokter Kecil</h3>
+                        <p class="text-blue-400 font-medium text-sm mb-3">Semasa SD di SDN 13 Pagi Kemayoran</p>
+                        <p class="text-gray-400 text-sm">
+                            Dipercaya menjadi penggerak kesehatan sekolah. Membantu menjaga kebersihan lingkungan dan mengedukasi teman sebaya.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="keterampilan" class="py-20 bg-[#0a0a0c] border-t border-gray-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-2">System.Skills</h2>
+                <div class="h-1 w-20 rgb-bg mx-auto rounded-full"></div>
+                <p class="mt-4 text-gray-500">Log kemampuan teknis yang sedang dipelajari.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto bg-cardbg p-8 border border-gray-800 rounded-2xl shadow-2xl relative">
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-1 rgb-bg rounded-b-xl"></div>
+                
+                <h3 class="text-xl font-bold mb-8 flex items-center text-white">
+                    <i class="fas fa-terminal text-gray-500 mr-3"></i> Keterampilan Teknis (On-Going)
+                </h3>
+                
+                <div class="space-y-8">
+                    <!-- Skill 1 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-medium text-gray-300 tracking-wide text-sm">Internet Protocol (IP)</span>
+                            <span class="text-gray-500 text-xs font-mono">75%</span>
+                        </div>
+                        <div class="w-full bg-gray-900 rounded-full h-2 border border-gray-800 overflow-hidden">
+                            <div class="rgb-bg h-2 rounded-full shadow-[0_0_10px_rgba(255,0,0,0.5)]" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <!-- Skill 2 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-medium text-gray-300 tracking-wide text-sm">Computer Hardware</span>
+                            <span class="text-gray-500 text-xs font-mono">70%</span>
+                        </div>
+                        <div class="w-full bg-gray-900 rounded-full h-2 border border-gray-800 overflow-hidden">
+                            <div class="rgb-bg h-2 rounded-full shadow-[0_0_10px_rgba(0,255,0,0.5)]" style="width: 70%"></div>
+                        </div>
+                    </div>
+                    <!-- Skill 3 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-medium text-gray-300 tracking-wide text-sm">Jaringan Komputer</span>
+                            <span class="text-gray-500 text-xs font-mono">65%</span>
+                        </div>
+                        <div class="w-full bg-gray-900 rounded-full h-2 border border-gray-800 overflow-hidden">
+                            <div class="rgb-bg h-2 rounded-full shadow-[0_0_10px_rgba(0,0,255,0.5)]" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <!-- Skill 4 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-medium text-gray-300 tracking-wide text-sm">Perbaikan Komputer</span>
+                            <span class="text-gray-500 text-xs font-mono">60%</span>
+                        </div>
+                        <div class="w-full bg-gray-900 rounded-full h-2 border border-gray-800 overflow-hidden">
+                            <div class="rgb-bg h-2 rounded-full shadow-[0_0_10px_rgba(255,0,255,0.5)]" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Interactive Box -->
+                <div class="mt-8 pt-6 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="text-xs font-mono text-gray-400">
+                        <i class="fas fa-microchip text-blue-400 mr-2"></i> Status: Belajar Aktif di SMK Tamansiswa Madya Teknik 2
+                    </div>
+                    <button onclick="triggerSystemPing()" class="px-4 py-2 bg-gray-900 hover:bg-gray-800 border border-gray-700 text-xs text-white font-mono rounded-lg transition-all shadow hover:shadow-cyan-500/20 hover:text-cyan-400">
+                        [ Run Diagnostic ]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="audiens" class="py-20 bg-darkbg border-t border-gray-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Audience Wall / Buku Tamu</h2>
+                <div class="h-1 w-20 rgb-bg mx-auto rounded-full"></div>
+                <p class="mt-4 text-gray-500">Tinggalkan pesan atau sapaan untuk ditampilkan secara langsung di web ini.</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Form Kirim Pesan Audiens -->
+                <div class="bg-cardbg p-6 rounded-2xl border border-gray-800 shadow-xl">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                        <i class="fas fa-comment-alt text-cyan-400 mr-2"></i> Tulis Pesan Anda
+                    </h3>
+                    <form id="audienceForm" class="space-y-4">
+                        <div>
+                            <input type="text" id="visitorName" class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-cyan-400 placeholder-gray-600 transition-colors" placeholder="Nama Anda / Instansi" required>
+                        </div>
+                        <div>
+                            <textarea id="visitorComment" rows="3" class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-cyan-400 placeholder-gray-600 resize-none transition-colors" placeholder="Tulis sapaan atau komentar estetik..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg transition-all text-sm shadow-lg shadow-cyan-500/20">
+                            Kirim ke Wall
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tampilan Daftar Audiens -->
+                <div class="bg-cardbg p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col h-[320px]">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center justify-between">
+                        <span><i class="fas fa-users text-purple-400 mr-2"></i> Pesan Audiens Terbaru</span>
+                        <span id="visitorCountBadge" class="text-xs font-mono px-2 py-1 bg-gray-900 border border-gray-700 rounded text-cyan-400">0 Pesan</span>
+                    </h3>
+                    <div id="audienceList" class="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
+                        <!-- Pesan akan dimuat melalui JavaScript (LocalStorage) agar tidak hilang saat direfresh -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="kontak" class="py-20 bg-darkbg border-t border-gray-900 relative">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-2">Ping Me</h2>
+                <div class="h-1 w-20 rgb-bg mx-auto rounded-full"></div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-12 bg-cardbg p-8 md:p-12 rounded-2xl border border-gray-800 shadow-2xl relative overflow-hidden">
+                <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-red-600/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+                <!-- Info Kontak -->
+                <div class="flex-1 space-y-8 z-10">
+                    <h3 class="text-2xl font-semibold mb-6 text-white"><span class="rgb-text">&gt;</span> Info Kontak</h3>
+                    
+                    <div class="flex items-center gap-5 group cursor-pointer">
+                        <div class="w-12 h-12 bg-gray-900 text-gray-400 group-hover:text-white group-hover:border-purple-500 border border-gray-700 rounded-xl flex items-center justify-center text-xl transition-all shadow-lg group-hover:shadow-purple-500/20">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-mono text-gray-500 text-xs uppercase tracking-wider mb-1">Location</h4>
+                            <p class="text-gray-300">Jakarta Pusat, Indonesia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-5 group cursor-pointer">
+                        <div class="w-12 h-12 bg-gray-900 text-gray-400 group-hover:text-white group-hover:border-blue-500 border border-gray-700 rounded-xl flex items-center justify-center text-xl transition-all shadow-lg group-hover:shadow-blue-500/20">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-mono text-gray-500 text-xs uppercase tracking-wider mb-1">Email_Address</h4>
+                            <a href="mailto:tuanmudadika8@gmail.com" class="text-gray-300 hover:text-white transition-colors">tuanmudadika8@gmail.com</a>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-gray-900/80 border border-gray-800 rounded-xl text-xs text-gray-400 font-mono leading-relaxed">
+                        <i class="fas fa-info-circle text-cyan-400 mr-1"></i> Pesan dari form di samping akan langsung dikirim ke sistem cloud database dan terhubung ke email Anda tanpa kendala server eksternal!
+                    </div>
+                </div>
+
+                <!-- Form Kontak Direct Integration (Cloud Database & Mailto Sync) -->
+                <div class="flex-1 z-10">
+                    <form id="contactForm" class="space-y-5">
+                        <div>
+                            <input type="text" name="name" id="contactName" class="w-full px-5 py-4 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white placeholder-gray-600 transition-all text-sm" placeholder="[Masukkan Nama]" required>
+                        </div>
+                        <div>
+                            <input type="email" name="email" id="contactEmail" class="w-full px-5 py-4 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-600 transition-all text-sm" placeholder="[Masukkan Email Pengirim]" required>
+                        </div>
+                        <div>
+                            <textarea name="message" id="contactMessage" rows="4" class="w-full px-5 py-4 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 text-white placeholder-gray-600 resize-none transition-all text-sm" placeholder="[Tulis Pesan...]" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 px-4 rgb-bg text-white font-bold rounded-lg hover:opacity-90 transition-opacity flex justify-center items-center gap-3 shadow-lg text-sm">
+                            <span>Execute Message (Kirim & Simpan)</span>
+                            <i class="fas fa-terminal text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-8 text-center border-t border-gray-900">
+        <p class="text-gray-600 text-sm font-mono">
+            &copy; <span id="year"></span> | Coded with <i class="fas fa-bolt text-yellow-500 mx-1"></i> by Andika Darmawan
+        </p>
+        <p class="text-xs text-gray-700 font-mono mt-1">Visitors Counter: <span id="visitor-count" class="text-green-500 font-bold">1,048</span> systems connected</p>
+    </footer>
+
+    <script>
+        // Logika Intro Booting Screen
+        let progress = 0;
+        const progressBar = document.getElementById('intro-progress');
+        const loadingText = document.getElementById('loading-text');
+        const introScreen = document.getElementById('intro-screen');
+
+        const loadingSteps = [
+            { percent: 25, text: "> Loading modules: Network & Hardware..." },
+            { percent: 50, text: "> Connecting to IP protocol..." },
+            { percent: 80, text: "> Verifying security clearances..." },
+            { percent: 100, text: "> SYSTEM READY. WELCOME!" }
+        ];
+
+        let stepIndex = 0;
+        const interval = setInterval(() => {
+            if (stepIndex < loadingSteps.length) {
+                progress = loadingSteps[stepIndex].percent;
+                progressBar.style.width = progress + '%';
+                loadingText.textContent = loadingSteps[stepIndex].text;
+                stepIndex++;
+            } else {
+                clearInterval(interval);
+                setTimeout(finishIntro, 500);
+            }
+        }, 400);
+
+        function finishIntro() {
+            introScreen.classList.add('intro-hidden');
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+            }, 800);
+        }
+
+        // Set tahun
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Mobile Menu
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Fitur Diagnostik Interaktif (Custom Alert)
+        function triggerSystemPing() {
+            const msg = "Diagnostic Result: All hardware modules nominal! IP routing active. Great performance.";
+            document.getElementById('customAlertMsg').textContent = msg;
+            
+            const overlay = document.getElementById('customAlertOverlay');
+            const modal = document.getElementById('customAlert');
+            
+            overlay.classList.remove('hidden');
+            modal.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                modal.classList.remove('opacity-0', 'scale-95');
+                modal.classList.add('opacity-100', 'scale-100');
+            }, 10);
+        }
+
+        function closeAlert() {
+            const overlay = document.getElementById('customAlertOverlay');
+            const modal = document.getElementById('customAlert');
+            
+            overlay.classList.add('opacity-0');
+            modal.classList.remove('opacity-100', 'scale-100');
+            modal.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                modal.classList.add('hidden');
+            }, 300); // Wait for transition
+        }
+
+        // Matrix Background Rain Animation
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const alphabet = katakana + latin;
+
+        const fontSize = 16;
+        let columns = canvas.width / fontSize;
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ffcc';
+            ctx.font = fontSize + '-monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 30);
+
+        // Fungsi Render List Pesan Audiens ke DOM
+        function renderMessages(messages) {
+            const listEl = document.getElementById('audienceList');
+            const countBadge = document.getElementById('visitorCountBadge');
+            
+            countBadge.textContent = messages.length + ' Pesan';
+            listEl.innerHTML = '';
+            
+            messages.forEach((msg) => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-gray-900/60 border border-gray-800 rounded-lg text-sm transition-all hover:border-gray-700';
+                item.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold ${msg.color} text-xs tracking-wider">${escapeHtml(msg.name)}</span>
+                        <span class="text-[10px] font-mono text-gray-500">${msg.timeStr}</span>
+                    </div>
+                    <p class="text-gray-300 text-xs leading-relaxed break-words">${escapeHtml(msg.comment)}</p>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+    </script>
+    <script type="module">
+        // Firebase Cloud Sync & Authentication Initialization (Safe Fallback)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.2/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.4.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.2/firebase-firestore.js";
+
+        let db = null, auth = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-portofolio-app';
+
+        async function initAppSystem() {
+            // Static local mock state fallback in case Firebase config endpoint is absent in iframe preview
+            let localMessages = [
+                { id: '1', name: 'Sistem Induk', comment: 'Sistem penyimpanan siap online. Selamat datang di portofolio Andika Darmawan!', timeStr: 'System', color: 'text-green-400', timestamp: Date.now() }
+            ];
+
+            renderMessages(localMessages);
+
+            try {
+                const response = await fetch('/__/firebase/init.json');
+                if (response.ok) {
+                    const config = await response.json();
+                    const app = initializeApp(config);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    
+                    let user = null;
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                        user = userCredential.user;
+                    } else {
+                        const userCredential = await signInAnonymously(auth);
+                        user = userCredential.user;
+                    }
+
+                    if (user && db) {
+                        const guestbookRef = collection(db, 'artifacts', appId, 'public', 'data', 'guestbook');
+                        const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'contact_messages');
+
+                        onSnapshot(guestbookRef, (snapshot) => {
+                            let cloudMessages = [];
+                            snapshot.forEach((docSnap) => {
+                                const data = docSnap.data();
+                                let timeStr = 'Baru saja';
+                                let tsValue = Date.now();
+                                
+                                if (data.timestamp) {
+                                    const date = new Date(data.timestamp.toMillis ? data.timestamp.toMillis() : data.timestamp);
+                                    timeStr = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' - ' + date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                                    tsValue = tsValue;
+                                }
+                                
+                                cloudMessages.push({
+                                    id: docSnap.id,
+                                    name: data.name,
+                                    comment: data.comment,
+                                    color: data.color || 'text-cyan-400',
+                                    timestamp: tsValue,
+                                    timeStr: timeStr
+                                });
+                            });
+
+                            if (cloudMessages.length > 0) {
+                                renderMessages(cloudMessages);
+                            }
+                        }, (err) => {
+                            console.log("Using fallback local storage viewer mode.");
+                        });
+
+                        // Form submit listeners
+                        setupForms(guestbookRef, messagesRef, user.uid);
+                    }
+                }
+            } catch (e) {
+                console.log("Berjalan pada mode preview mandiri (Standalone Mode).");
+                setupLocalForms();
+            }
+        }
+
+        function setupForms(guestbookRef, messagesRef, userId) {
+            const audienceForm = document.getElementById('audienceForm');
+            if (audienceForm) {
+                audienceForm.onsubmit = async function(event) {
+                    event.preventDefault();
+                    const name = document.getElementById('visitorName').value.trim();
+                    const comment = document.getElementById('visitorComment').value.trim();
+                    if(!name || !comment) return;
+
+                    const colors = ['text-cyan-400', 'text-purple-400', 'text-green-400', 'text-pink-400', 'text-yellow-400'];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+                    try {
+                        await addDoc(guestbookRef, {
+                            name: name,
+                            comment: comment,
+                            color: randomColor,
+                            timestamp: serverTimestamp(),
+                            userId: userId
+                        });
+                        document.getElementById('visitorName').value = '';
+                        document.getElementById('visitorComment').value = '';
+                    } catch(err) {
+                        console.error(err);
+                    }
+                };
+            }
+
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.onsubmit = async function(event) {
+                    event.preventDefault();
+                    const name = document.getElementById('contactName').value.trim();
+                    const email = document.getElementById('contactEmail').value.trim();
+                    const message = document.getElementById('contactMessage').value.trim();
+                    if(!name || !email || !message) return;
+
+                    try {
+                        await addDoc(messagesRef, {
+                            name: name,
+                            email: email,
+                            message: message,
+                            timestamp: serverTimestamp(),
+                            userId: userId
+                        });
+
+                        document.getElementById('customAlertMsg').textContent = `Pesan dari ${name} berhasil dikirim dan dicatat ke sistem cloud!`;
+                        const overlay = document.getElementById('customAlertOverlay');
+                        const modal = document.getElementById('customAlert');
+                        overlay.classList.remove('hidden');
+                        modal.classList.remove('hidden');
+                        setTimeout(() => {
+                            overlay.classList.remove('opacity-0');
+                            modal.classList.remove('opacity-0', 'scale-95');
+                            modal.classList.add('opacity-100', 'scale-100');
+                        }, 10);
+                        contactForm.reset();
+                    } catch(err) {
+                        console.error(err);
+                    }
+                };
+            }
+        }
+
+        function setupLocalForms() {
+            let localList = [
+                { name: 'Sistem Induk', comment: 'Sistem portofolio berjalan dengan sangat lancar.', timeStr: 'Now', color: 'text-cyan-400' }
+            ];
+            
+            const audienceForm = document.getElementById('audienceForm');
+            if (audienceForm) {
+                audienceForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    const name = document.getElementById('visitorName').value.trim();
+                    const comment = document.getElementById('visitorComment').value.trim();
+                    if(!name || !comment) return;
+
+                    localList.unshift({ name, comment, timeStr: 'Baru saja', color: 'text-green-400' });
+                    renderMessages(localList);
+                    document.getElementById('visitorName').value = '';
+                    document.getElementById('visitorComment').value = '';
+                };
+            }
+
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    const name = document.getElementById('contactName').value.trim();
+                    const email = document.getElementById('contactEmail').value.trim();
+                    const message = document.getElementById('contactMessage').value.trim();
+                    if(!name || !email || !message) return;
+
+                    document.getElementById('customAlertMsg').textContent = `Terima kasih ${name}, pesan Anda berhasil dikirim!`;
+                    const overlay = document.getElementById('customAlertOverlay');
+                    const modal = document.getElementById('customAlert');
+                    overlay.classList.remove('hidden');
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        overlay.classList.remove('opacity-0');
+                        modal.classList.remove('opacity-0', 'scale-95');
+                        modal.classList.add('opacity-100', 'scale-100');
+                    }, 10);
+                    contactForm.reset();
+                }; 
+            }
+        }
+
+        initAppSystem();
+    </script>
+</body>
+</html>
